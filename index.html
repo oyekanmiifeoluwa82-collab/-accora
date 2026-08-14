@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ACCORA | Digital Accounts. One Marketplace.</title>
+  <meta name="description" content="ACCORA is a modern digital marketplace for gaming, social, streaming, cloud and email products." />
+  <style>
+    :root{--bg:#07070d;--card:#11111b;--card2:#171724;--text:#f7f7fb;--muted:#9b9baa;--purple:#7c4dff;--blue:#3d7cff;--line:#272735}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 75% 5%,#21114d 0,transparent 30%),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    a{text-decoration:none;color:inherit}.wrap{max-width:1180px;margin:auto;padding:0 22px}
+    header{position:sticky;top:0;z-index:20;background:rgba(7,7,13,.78);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.06)}
+    nav{height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px}.logo{font-size:25px;font-weight:900;letter-spacing:2px}.logo span{color:#8f68ff}
+    .navlinks{display:flex;gap:26px;color:#b9b9c7;font-size:14px}.navlinks a:hover{color:#fff}.actions{display:flex;gap:10px}.btn{border:1px solid var(--line);background:#11111b;color:#fff;padding:11px 16px;border-radius:11px;font-weight:700;cursor:pointer}.btn.primary{background:linear-gradient(135deg,#7c4dff,#4c7dff);border:0;box-shadow:0 10px 35px rgba(94,72,255,.28)}
+    .hero{padding:82px 0 55px;text-align:center}.pill{display:inline-flex;padding:8px 13px;border:1px solid #302852;background:#100d1c;color:#bca9ff;border-radius:999px;font-size:12px;font-weight:800}.hero h1{font-size:clamp(44px,7vw,78px);line-height:.98;margin:22px auto 18px;max-width:850px;letter-spacing:-3px}.gradient{background:linear-gradient(90deg,#fff,#9f7dff,#5c8dff);-webkit-background-clip:text;background-clip:text;color:transparent}.hero p{color:var(--muted);max-width:640px;margin:0 auto 28px;font-size:17px;line-height:1.65}.search{max-width:700px;margin:0 auto;display:flex;background:#11111b;border:1px solid #303044;border-radius:15px;padding:7px;box-shadow:0 20px 60px rgba(0,0,0,.35)}.search input{flex:1;background:transparent;border:0;outline:0;color:#fff;padding:13px;font-size:15px}.search button{border:0;border-radius:10px;background:#fff;color:#09090d;font-weight:800;padding:0 20px;cursor:pointer}
+    .trust{display:flex;justify-content:center;gap:30px;flex-wrap:wrap;color:#8f8f9f;font-size:12px;margin-top:22px}.trust b{color:#d7d7df}
+    section{padding:54px 0}.sectionhead{display:flex;align-items:end;justify-content:space-between;margin-bottom:20px}.sectionhead h2{margin:0;font-size:28px}.sectionhead p{margin:6px 0 0;color:var(--muted);font-size:14px}
+    .cats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}.cat{background:linear-gradient(145deg,#151522,#0e0e16);border:1px solid var(--line);padding:22px;border-radius:17px;min-height:145px;transition:.2s}.cat:hover{transform:translateY(-4px);border-color:#51417e}.icon{font-size:31px;margin-bottom:20px}.cat strong{display:block}.cat small{color:var(--muted);display:block;margin-top:6px}
+    .products{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.product{background:var(--card);border:1px solid var(--line);border-radius:17px;overflow:hidden}.thumb{height:125px;display:grid;place-items:center;font-size:42px;background:linear-gradient(135deg,#19152e,#101b35)}.info{padding:15px}.tag{font-size:10px;color:#a991ff;text-transform:uppercase;font-weight:800}.info h3{font-size:15px;margin:7px 0}.price{font-weight:900;font-size:19px}.buy{display:block;text-align:center;margin-top:13px;padding:10px;border-radius:9px;background:#1e1e2c;font-size:13px;font-weight:800}
+    .why{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.why .box{padding:25px;border:1px solid var(--line);background:#0f0f18;border-radius:17px}.why h3{margin:12px 0 7px}.why p{color:var(--muted);font-size:13px;line-height:1.6;margin:0}
+    .cta{border:1px solid #3a2b66;border-radius:22px;padding:38px;background:radial-gradient(circle at 80% 30%,#31206b,transparent 38%),#11101b;text-align:center}.cta h2{font-size:34px;margin:0 0 10px}.cta p{color:var(--muted);margin:0 auto 20px}
+    footer{border-top:1px solid var(--line);padding:30px 0;color:#777787;font-size:12px}.foot{display:flex;justify-content:space-between;gap:20px}
+    @media(max-width:850px){.navlinks{display:none}.cats{grid-template-columns:repeat(2,1fr)}.products{grid-template-columns:repeat(2,1fr)}.why{grid-template-columns:1fr}.hero{padding-top:55px}.sectionhead{display:block}.sectionhead a{display:inline-block;margin-top:12px}}
+    @media(max-width:520px){.wrap{padding:0 15px}.actions .btn:first-child{display:none}.hero h1{letter-spacing:-2px}.search button{padding:0 14px}.cats,.products{grid-template-columns:1fr 1fr}.cat{min-height:130px;padding:16px}.thumb{height:105px}.foot{display:block}}
+  </style>
+</head>
+<body>
+<header><div class="wrap"><nav>
+  <a class="logo" href="#">ACC<span>O</span>RA</a>
+  <div class="navlinks"><a href="#categories">Categories</a><a href="#featured">Featured</a><a href="#why">Why Accora?</a><a href="#support">Support</a></div>
+  <div class="actions"><button class="btn">Login</button><button class="btn primary">Create account</button></div>
+</nav></div></header>
+
+<main>
+<section class="hero"><div class="wrap">
+  <span class="pill">DIGITAL MARKETPLACE</span>
+  <h1>Digital Accounts.<br><span class="gradient">One Marketplace.</span></h1>
+  <p>Discover digital products across gaming, social, streaming, cloud and email, all in one clean marketplace.</p>
+  <div class="search"><input id="search" placeholder="Search products, platforms or categories..." /><button onclick="doSearch()">Search</button></div>
+  <div class="trust"><span>✓ <b>Fast delivery</b></span><span>✓ <b>Secure checkout</b></span><span>✓ <b>Support available</b></span></div>
+</div></section>
+
+<section id="categories"><div class="wrap">
+  <div class="sectionhead"><div><h2>Browse categories</h2><p>Find what you need in a few clicks.</p></div></div>
+  <div class="cats">
+    <a class="cat" href="#featured"><div class="icon">🎮</div><strong>Gaming</strong><small>Games & digital products</small></a>
+    <a class="cat" href="#featured"><div class="icon">📱</div><strong>Social</strong><small>Social digital products</small></a>
+    <a class="cat" href="#featured"><div class="icon">📺</div><strong>Streaming</strong><small>Entertainment products</small></a>
+    <a class="cat" href="#featured"><div class="icon">☁️</div><strong>Cloud</strong><small>Cloud & digital services</small></a>
+    <a class="cat" href="#featured"><div class="icon">📧</div><strong>Email</strong><small>Email products & services</small></a>
+  </div>
+</div></section>
+
+<section id="featured"><div class="wrap">
+  <div class="sectionhead"><div><h2>Featured products</h2><p>Popular listings from the marketplace.</p></div><a class="btn" href="#">View all</a></div>
+  <div class="products">
+    <article class="product"><div class="thumb">🎮</div><div class="info"><span class="tag">Gaming</span><h3>Gaming Digital Product</h3><div class="price">₦5,000</div><a class="buy" href="#">View product</a></div></article>
+    <article class="product"><div class="thumb">📺</div><div class="info"><span class="tag">Streaming</span><h3>Streaming Digital Product</h3><div class="price">₦3,500</div><a class="buy" href="#">View product</a></div></article>
+    <article class="product"><div class="thumb">☁️</div><div class="info"><span class="tag">Cloud</span><h3>Cloud Digital Product</h3><div class="price">₦4,500</div><a class="buy" href="#">View product</a></div></article>
+    <article class="product"><div class="thumb">📱</div><div class="info"><span class="tag">Social</span><h3>Social Digital Product</h3><div class="price">₦2,500</div><a class="buy" href="#">View product</a></div></article>
+  </div>
+</div></section>
+
+<section id="why"><div class="wrap">
+  <div class="sectionhead"><div><h2>Why Accora?</h2><p>Built to make digital shopping simple.</p></div></div>
+  <div class="why">
+    <div class="box"><div>⚡</div><h3>Fast delivery</h3><p>Get your digital order delivered through the method shown on each product.</p></div>
+    <div class="box"><div>🔒</div><h3>Secure checkout</h3><p>A straightforward checkout experience with clear order information.</p></div>
+    <div class="box"><div>💬</div><h3>Human support</h3><p>Need help with an order? Reach the Accora support team.</p></div>
+  </div>
+</div></section>
+
+<section id="support"><div class="wrap"><div class="cta">
+  <h2>Ready to explore Accora?</h2><p>Browse the marketplace and find your next digital product.</p>
+  <a class="btn primary" href="#categories">Start browsing</a>
+</div></div></section>
+</main>
+
+<footer><div class="wrap"><div class="foot"><span>© 2026 ACCORA. All rights reserved.</span><span>Digital Accounts. One Marketplace.</span></div></div></footer>
+
+<script>
+function doSearch(){
+  const q=document.getElementById('search').value.trim();
+  if(q) alert('Search is ready for the backend: "'+q+'"');
+  else document.getElementById('categories').scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
