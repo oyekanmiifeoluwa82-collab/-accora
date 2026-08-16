@@ -27,7 +27,7 @@ async function supabase(path, options = {}) {
 
   const text = await response.text();
 
-  let data = null;
+  let data;
 
   try {
     data = text ? JSON.parse(text) : null;
@@ -45,6 +45,29 @@ async function supabase(path, options = {}) {
   }
 
   return data;
+}
+
+async function getUser(accessToken) {
+  if (!accessToken) {
+    return null;
+  }
+
+  const response = await fetch(
+    `${SUPABASE_URL}/auth/v1/user`,
+    {
+      headers: {
+        apikey: SUPABASE_SERVICE_ROLE_KEY,
+        Authorization:
+          `Bearer ${accessToken}`
+      }
+    }
+  );
+
+  if (!response.ok) {
+    return null;
+  }
+
+  return await response.json();
 }
 
 async function verifyFlutterwave(txRef) {
@@ -76,7 +99,7 @@ function makeReference() {
     Date.now() +
     "-" +
     crypto
-      .randomBytes(3)
+      .randomBytes(4)
       .toString("hex")
       .toUpperCase()
   );
@@ -105,76 +128,99 @@ module.exports = async function handler(req, res) {
 
   try {
 
+    /*
+      SECURITY:
+      Get the logged-in Supabase user from
+      their access token instead of trusting
+      a user_id sent by the browser.
+    */
+
+    const authHeader =
+      req.headers.authorization || "";
+
+    const accessToken =
+      authHeader.startsWith("Bearer ")
+        ? authHeader.slice(7)
+        : null;
+
+    const user =
+      await getUser(accessToken);
+
+    if (!user?.id) {
+      return json(res, 401, {
+        success: false,
+        error:
+          "You must be logged in to use your wallet."
+      });
+    }
+
+    const userId = user.id;
+
     const {
       action,
-      user_id,
       tx_ref,
       amount,
       currency = "NGN"
     } = req.body || {};
 
-    if (!action || !user_id) {
+    if (!action) {
       return json(res, 400, {
         success: false,
         error:
-          "Missing wallet action or user ID."
+          "Missing wallet action."
       });
     }
 
     /*
-      GET WALLET BALANCE
+      GET BALANCE
     */
 
     if (action === "balance") {
 
-      const rows = await supabase(
-        `wallets?user_id=eq.${encodeURIComponent(user_id)}&select=user_id,balance,updated_at`
+      let rows = await supabase(
+        `wallets?user_id=eq.${encodeURIComponent(userId)}&select=user_id,balance,updated_at`
       );
 
-      const wallet =
-        Array.isArray(rows) && rows.length
-          ? rows[0]
-          : null;
+      if (!rows?.length) {
 
-      if (!wallet) {
-
-        await supabase("wallets", {
-          method: "POST",
-          headers: {
-            Prefer: "return=representation"
-          },
-          body: JSON.stringify({
-            user_id,
-            balance: 0
-          })
-        });
-
-        return json(res, 200, {
-          success: true,
-          balance: 0
-        });
+        rows = await supabase(
+          "wallets",
+          {
+            method: "POST",
+            headers: {
+              Prefer:
+                "return=representation"
+            },
+            body: JSON.stringify({
+              user_id: userId,
+              balance: 0
+            })
+          }
+        );
       }
 
       return json(res, 200, {
         success: true,
         balance:
-          Number(wallet.balance) || 0
+          Number(rows?.[0]?.balance || 0)
       });
     }
 
     /*
-      WALLET TRANSACTION HISTORY
+      TRANSACTION HISTORY
     */
 
     if (action === "transactions") {
 
-      const rows = await supabase(
-        `wallet_transactions?user_id=eq.${encodeURIComponent(user_id)}&select=*&order=created_at.desc&limit=100`
-      );
+      const rows =
+        await supabase(
+          `wallet_transactions?user_id=eq.${encodeURIComponent(userId)}&select=*&order=created_at.desc&limit=100`
+        );
 
       return json(res, 200, {
         success: true,
-        transactions: rows || []
+        transactions:
+          rows || []
       });
     }
 
@@ -199,20 +245,24 @@ module.exports = async function handler(req, res) {
       }
 
       const reference =
-        tx_ref || makeReference();
+        makeReference();
 
-      await supabase("wallet_topups", {
-        method: "POST",
-        headers: {
-          Prefer: "return=representation"
-        },
-        body: JSON.stringify({
-          user_id,
-          tx_ref: reference,
-          amount: numericAmount,
-          status: "pending"
-        })
-      });
+      await supabase(
+        "wallet_topups",
+        {
+          method: "POST",
+          headers: {
+            Prefer:
+              "return=representation"
+          },
+          body: JSON.stringify({
+            user_id: userId,
+            tx_ref: reference,
+            amount: numericAmount,
+            status: "pending"
+          })
+        }
+      );
 
       return json(res, 200, {
         success: true,
@@ -236,7 +286,9 @@ module.exports = async function handler(req, res) {
       }
 
       const verification =
-        await verifyFlutterwave(tx_ref);
+        await verifyFlutterwave(
+          tx_ref
+        );
 
       const payment =
         verification?.data;
@@ -250,12 +302,13 @@ module.exports = async function handler(req, res) {
       }
 
       if (
-        payment.status !== "successful" ||
+        payment.status !==
+          "successful" ||
         String(payment.currency)
           .toUpperCase() !==
-          String(currency).toUpperCase()
+          String(currency)
+            .toUpperCase()
       ) {
-
         return json(res, 400, {
           success: false,
           error:
@@ -265,7 +318,7 @@ module.exports = async function handler(req, res) {
 
       const topups =
         await supabase(
-          `wallet_topups?tx_ref=eq.${encodeURIComponent(tx_ref)}&user_id=eq.${encodeURIComponent(user_id)}&select=*`
+          `wallet_topups?tx_ref=eq.${encodeURIComponent(tx_ref)}&user_id=eq.${encodeURIComponent(userId)}&select=*`
         );
 
       if (!topups?.length) {
@@ -276,19 +329,31 @@ module.exports = async function handler(req, res) {
         });
       }
 
-      const topup = topups[0];
+      const topup =
+        topups[0];
 
-      if (topup.status === "successful") {
+      /*
+        Prevent the same payment from
+        crediting the wallet twice.
+      */
 
-        const existing =
+      if (
+        topup.status ===
+        "successful"
+      ) {
+
+        const wallets =
           await supabase(
-            `wallets?user_id=eq.${encodeURIComponent(user_id)}&select=balance`
+            `wallets?user_id=eq.${encodeURIComponent(userId)}&select=balance`
           );
 
         return json(res, 200, {
           success: true,
           balance:
-            Number(existing?.[0]?.balance || 0)
+            Number(
+              wallets?.[0]?.balance ||
+              0
+            )
         });
       }
 
@@ -308,35 +373,44 @@ module.exports = async function handler(req, res) {
 
       const wallets =
         await supabase(
-          `wallets?user_id=eq.${encodeURIComponent(user_id)}&select=balance`
+          `wallets?user_id=eq.${encodeURIComponent(userId)}&select=balance`
         );
 
-      let oldBalance =
-        Number(wallets?.[0]?.balance || 0);
+      const oldBalance =
+        Number(
+          wallets?.[0]?.balance ||
+          0
+        );
 
       const newBalance =
         oldBalance + expected;
 
       if (!wallets?.length) {
 
-        await supabase("wallets", {
-          method: "POST",
-          body: JSON.stringify({
-            user_id,
-            balance: newBalance
-          })
-        });
+        await supabase(
+          "wallets",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              user_id: userId,
+              balance:
+                newBalance
+            })
+          }
+        );
 
       } else {
 
         await supabase(
-          `wallets?user_id=eq.${encodeURIComponent(user_id)}`,
+          `wallets?user_id=eq.${encodeURIComponent(userId)}`,
           {
             method: "PATCH",
             body: JSON.stringify({
-              balance: newBalance,
+              balance:
+                newBalance,
               updated_at:
-                new Date().toISOString()
+                new Date()
+                  .toISOString()
             })
           }
         );
@@ -347,11 +421,16 @@ module.exports = async function handler(req, res) {
         {
           method: "PATCH",
           body: JSON.stringify({
-            status: "successful",
+            status:
+              "successful",
             flutterwave_id:
-              String(payment.id || ""),
+              String(
+                payment.id ||
+                ""
+              ),
             completed_at:
-              new Date().toISOString()
+              new Date()
+                .toISOString()
           })
         }
       );
@@ -361,11 +440,16 @@ module.exports = async function handler(req, res) {
         {
           method: "POST",
           body: JSON.stringify({
-            user_id,
-            type: "credit",
-            amount: expected,
-            balance_after: newBalance,
-            reference: tx_ref,
+            user_id:
+              userId,
+            type:
+              "credit",
+            amount:
+              expected,
+            balance_after:
+              newBalance,
+            reference:
+              tx_ref,
             description:
               "Wallet top-up via Flutterwave"
           })
@@ -374,8 +458,10 @@ module.exports = async function handler(req, res) {
 
       return json(res, 200, {
         success: true,
-        balance: newBalance,
-        amount: expected
+        balance:
+          newBalance,
+        amount:
+          expected
       });
     }
 
