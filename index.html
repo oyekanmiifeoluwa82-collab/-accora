@@ -1,0 +1,1809 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ACCORA | Digital Marketplace</title>
+<meta name="description" content="Accora digital marketplace">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://checkout.flutterwave.com/v3.js"></script>
+<style>
+:root{
+  --bg:#07070d;
+  --card:#11111b;
+  --text:#f7f7fb;
+  --muted:#9b9baa;
+  --line:#292938;
+  --accent:#7b55ff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at 75% 0,#21124d 0,transparent 32%),
+    var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+}
+a{text-decoration:none;color:inherit}
+button,input{font:inherit}
+.wrap{
+  max-width:1180px;
+  margin:auto;
+  padding:0 20px;
+}
+header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:rgba(7,7,13,.86);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+nav{
+  height:70px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+}
+.logo{
+  font-weight:950;
+  font-size:25px;
+  letter-spacing:2px;
+}
+.logo i{
+  font-style:normal;
+  color:#8f6cff;
+}
+.nav{
+  display:flex;
+  gap:24px;
+  color:#aaaaba;
+  font-size:14px;
+}
+.actions{
+  display:flex;
+  gap:9px;
+  align-items:center;
+}
+.btn{
+  border:1px solid var(--line);
+  background:#11111b;
+  color:#fff;
+  padding:10px 15px;
+  border-radius:10px;
+  font-weight:800;
+  cursor:pointer;
+}
+.btn:hover{
+  border-color:#55427e;
+}
+.btn.primary{
+  background:linear-gradient(135deg,#8054ff,#4c80ff);
+  border:0;
+}
+.hero{
+  text-align:center;
+  padding:75px 0 50px;
+}
+.pill{
+  display:inline-block;
+  border:1px solid #33265b;
+  background:#100c1b;
+  color:#bba8ff;
+  border-radius:999px;
+  padding:8px 13px;
+  font-size:11px;
+  font-weight:900;
+}
+.hero h1{
+  font-size:clamp(43px,7vw,76px);
+  line-height:.98;
+  letter-spacing:-3px;
+  margin:20px 0;
+}
+.gradient{
+  background:linear-gradient(90deg,#fff,#a17eff,#6395ff);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.hero p{
+  max-width:650px;
+  margin:0 auto 25px;
+  color:var(--muted);
+  line-height:1.65;
+}
+.search{
+  max-width:700px;
+  margin:auto;
+  display:flex;
+  padding:7px;
+  background:#11111b;
+  border:1px solid #333345;
+  border-radius:15px;
+}
+.search input{
+  flex:1;
+  min-width:0;
+  background:transparent;
+  border:0;
+  outline:0;
+  color:#fff;
+  padding:12px;
+}
+.search button{
+  border:0;
+  border-radius:10px;
+  padding:0 20px;
+  font-weight:900;
+}
+.trust{
+  display:flex;
+  justify-content:center;
+  gap:25px;
+  flex-wrap:wrap;
+  color:#8d8d9c;
+  font-size:12px;
+  margin-top:18px;
+}
+section{padding:48px 0}
+.head{margin-bottom:20px}
+.head h2{
+  margin:0;
+  font-size:28px;
+}
+.head p{
+  color:var(--muted);
+  margin:7px 0 0;
+  font-size:14px;
+}
+.categories{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:13px;
+}
+.cat{
+  padding:20px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:linear-gradient(145deg,#151522,#0e0e16);
+  cursor:pointer;
+  transition:.2s;
+  color:#fff;
+  text-align:left;
+}
+.cat:hover{
+  transform:translateY(-3px);
+  border-color:#544180;
+}
+.cat .ico{
+  font-size:30px;
+  margin-bottom:18px;
+}
+.cat strong{display:block}
+.cat small{
+  display:block;
+  color:var(--muted);
+  margin-top:6px;
+}
+.products{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+.product{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:16px;
+  overflow:hidden;
+}
+.thumb{
+  height:105px;
+  display:grid;
+  place-items:center;
+  font-size:38px;
+  background:linear-gradient(135deg,#18142c,#101c34);
+}
+.info{padding:14px}
+.tag{
+  font-size:10px;
+  color:#ad98ff;
+  font-weight:900;
+  text-transform:uppercase;
+}
+.info h3{
+  font-size:15px;
+  margin:7px 0;
+}
+.price{
+  font-weight:950;
+  font-size:18px;
+}
+.desc{
+  font-size:11px;
+  line-height:1.5;
+  color:#9999a8;
+  margin-top:7px;
+  min-height:34px;
+}
+.add{
+  width:100%;
+  margin-top:12px;
+  padding:10px;
+  border:0;
+  border-radius:9px;
+  background:#202031;
+  color:#fff;
+  font-weight:900;
+  cursor:pointer;
+}
+.add:hover{background:#292942}
+.features{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+.feature{
+  border:1px solid var(--line);
+  background:#0f0f18;
+  border-radius:16px;
+  padding:22px;
+}
+.feature h3{margin:10px 0 6px}
+.feature p{
+  margin:0;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.55;
+}
+footer{
+  border-top:1px solid var(--line);
+  padding:30px 0;
+  color:#777787;
+  font-size:12px;
+}
+.foot{
+  display:flex;
+  justify-content:space-between;
+}
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.75);
+  backdrop-filter:blur(8px);
+  padding:18px;
+  overflow:auto;
+}
+.modal.show{display:flex}
+.box{
+  width:min(520px,100%);
+  max-height:90vh;
+  overflow:auto;
+  background:#11111b;
+  border:1px solid #353549;
+  border-radius:20px;
+  padding:25px;
+}
+.box h2{margin:0 0 7px}
+.box>p{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+}
+.close{
+  float:right;
+  background:none;
+  border:0;
+  color:#aaa;
+  font-size:25px;
+  cursor:pointer;
+}
+.field{margin:13px 0}
+.field label{
+  display:block;
+  font-size:12px;
+  font-weight:800;
+  margin-bottom:6px;
+}
+.field input{
+  width:100%;
+  padding:12px;
+  border:1px solid #303044;
+  border-radius:10px;
+  background:#0a0a11;
+  color:#fff;
+  outline:0;
+}
+.row{
+  display:flex;
+  gap:9px;
+}
+.row .btn{flex:1}
+.msg{
+  min-height:20px;
+  color:#bba8ff;
+  font-size:12px;
+  margin-top:10px;
+}
+.drawer{
+  position:fixed;
+  right:16px;
+  bottom:16px;
+  z-index:60;
+  display:none;
+}
+.drawer.show{display:block}
+.cartbox{
+  width:min(430px,calc(100vw - 32px));
+  max-height:80vh;
+  overflow:auto;
+  background:#11111b;
+  border:1px solid #353549;
+  border-radius:18px;
+  padding:18px;
+  box-shadow:0 20px 60px #000;
+}
+.cartitem{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  border-bottom:1px solid var(--line);
+  padding:9px 0;
+  font-size:13px;
+}
+.carttotal{
+  font-weight:950;
+  margin:15px 0;
+}
+.account-box{
+  border:1px solid var(--line);
+  background:#0f0f18;
+  border-radius:14px;
+  padding:15px;
+  margin-top:10px;
+  font-size:13px;
+}
+.balance-card{
+  margin:18px 0;
+  padding:20px;
+  border-radius:16px;
+  background:linear-gradient(135deg,#24164d,#14284a);
+  border:1px solid #47376b;
+}
+.balance-label{
+  color:#aaaaba;
+  font-size:12px;
+  font-weight:800;
+}
+.balance{
+  font-size:32px;
+  font-weight:950;
+  margin:7px 0 15px;
+}
+.balance-actions{
+  display:flex;
+  gap:9px;
+}
+.balance-actions .btn{flex:1}
+.transactions{
+  margin-top:18px;
+}
+.transaction{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid var(--line);
+}
+.transaction-info{
+  min-width:0;
+}
+.transaction-title{
+  font-weight:800;
+  font-size:13px;
+}
+.transaction-date{
+  color:#777787;
+  font-size:10px;
+  margin-top:4px;
+}
+.credit{
+  color:#62d99a;
+  font-weight:900;
+}
+.debit{
+  color:#ff7777;
+  font-weight:900;
+}
+@media(max-width:850px){
+  .nav{display:none}
+  .categories{grid-template-columns:repeat(2,1fr)}
+  .products{grid-template-columns:repeat(2,1fr)}
+  .features{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+  .wrap{padding:0 14px}
+  .actions .login{display:none}
+  .hero{padding-top:52px}
+  .hero h1{letter-spacing:-2px}
+  .categories,.products{grid-template-columns:1fr 1fr}
+  .cat{padding:15px}
+  .thumb{height:90px}
+  .foot{display:block}
+  .balance-actions{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="#">
+        ACC<i>O</i>RA
+      </a>
+      <div class="nav">
+        <a href="#categories">Categories</a>
+        <a href="#products">Products</a>
+        <a href="#why">Why Accora</a>
+      </div>
+      <div class="actions" id="actions">
+        <button
+          class="btn login"
+          onclick="openAuth('login')"
+        >
+          Login
+        </button>
+        <button
+          class="btn primary"
+          onclick="openAuth('signup')"
+        >
+          Create account
+        </button>
+      </div>
+    </nav>
+  </div>
+</header>
+<!-- AUTH MODAL -->
+<div
+  class="modal"
+  id="authModal"
+  onclick="if(event.target===this)closeAuth()"
+>
+  <div class="box">
+    <button
+      class="close"
+      onclick="closeAuth()"
+    >
+      ×
+    </button>
+    <h2 id="authTitle">
+      Create your Accora account
+    </h2>
+    <p id="authSub">
+      Sign up with your email and password.
+    </p>
+    <form onsubmit="authSubmit(event)">
+      <div class="field">
+        <label>Email</label>
+        <input
+          id="email"
+          type="email"
+          required
+          autocomplete="email"
+        >
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input
+          id="password"
+          type="password"
+          minlength="6"
+          required
+        >
+      </div>
+      <div
+        class="field"
+        id="confirmField"
+      >
+        <label>Confirm password</label>
+        <input
+          id="confirm"
+          type="password"
+          minlength="6"
+        >
+      </div>
+      <div class="row">
+        <button
+          type="button"
+          class="btn"
+          onclick="switchAuth()"
+        >
+          Switch
+        </button>
+        <button
+          class="btn primary"
+          id="submitAuth"
+        >
+          Create account
+        </button>
+      </div>
+      <div
+        class="msg"
+        id="authMsg"
+      ></div>
+    </form>
+  </div>
+</div>
+<!-- ACCOUNT / WALLET MODAL -->
+<div
+  class="modal"
+  id="accountModal"
+  onclick="if(event.target===this)closeAccount()"
+>
+  <div class="box">
+    <button
+      class="close"
+      onclick="closeAccount()"
+    >
+      ×
+    </button>
+    <h2>My Accora Account</h2>
+    <p id="accountEmail">
+      Loading account...
+    </p>
+    <div class="balance-card">
+      <div class="balance-label">
+        WALLET BALANCE
+      </div>
+      <div
+        class="balance"
+        id="walletBalance"
+      >
+        ₦0
+      </div>
+      <div class="balance-actions">
+        <button
+          class="btn primary"
+          onclick="openFundWallet()"
+        >
+          + Fund wallet
+        </button>
+        <button
+          class="btn"
+          onclick="loadWallet()"
+        >
+          Refresh
+        </button>
+      </div>
+    </div>
+    <div
+      id="fundWalletBox"
+      style="display:none"
+    >
+      <div class="field">
+        <label>
+          Amount to add
+        </label>
+        <input
+          id="walletAmount"
+          type="number"
+          min="100"
+          step="1"
+          placeholder="e.g. 5000"
+        >
+      </div>
+      <button
+        class="btn primary"
+        style="width:100%"
+        onclick="fundWallet()"
+      >
+        Continue to payment
+      </button>
+      <div
+        class="msg"
+        id="walletMsg"
+      ></div>
+    </div>
+    <div class="transactions">
+      <h3>
+        Transaction history
+      </h3>
+      <div id="transactionList">
+        Loading...
+      </div>
+    </div>
+  </div>
+</div>
+<!-- CART -->
+<div
+  class="drawer"
+  id="drawer"
+>
+  <div class="cartbox">
+    <b>Your cart</b>
+    <div id="cartItems"></div>
+    <div
+      class="carttotal"
+      id="cartTotal"
+    ></div>
+    <div class="field">
+      <label>
+        Delivery email
+      </label>
+      <input
+        id="deliveryEmail"
+        type="email"
+        placeholder="you@example.com"
+      >
+    </div>
+    <button
+      class="btn primary"
+      style="width:100%"
+      onclick="payFlutterwave()"
+    >
+      Pay from Wallet
+    </button>
+    <div
+      class="msg"
+      id="payMsg"
+    ></div>
+  </div>
+</div>
+<main>
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <span class="pill">
+      DIGITAL MARKETPLACE
+    </span>
+    <h1>
+      Digital Accounts.<br>
+      <span class="gradient">
+        One Marketplace.
+      </span>
+    </h1>
+    <p>
+      Discover digital products across social, gaming,
+      streaming, VPN, proxy and email categories
+      in one clean marketplace.
+    </p>
+    <div class="search">
+      <input
+        id="search"
+        placeholder="Search products or categories..."
+        oninput="searchProducts()"
+      >
+      <button
+        onclick="searchProducts()"
+      >
+        Search
+      </button>
+    </div>
+    <div class="trust">
+      <span>
+        ✓ <b>Fast delivery</b>
+      </span>
+      <span>
+        ✓ <b>Secure checkout</b>
+      </span>
+      <span>
+        ✓ <b>Email delivery</b>
+      </span>
+    </div>
+  </div>
+</section>
+<!-- CATEGORIES -->
+<section id="categories">
+  <div class="wrap">
+    <div class="head">
+      <h2>
+        Browse categories
+      </h2>
+      <p>
+        Choose a category to see its products.
+      </p>
+    </div>
+    <div
+      class="categories"
+      id="categoryGrid"
+    ></div>
+  </div>
+</section>
+<!-- PRODUCTS -->
+<section id="products">
+  <div class="wrap">
+    <div class="head">
+      <h2>
+        Products
+      </h2>
+      <p id="productHint">
+        All available catalogue items.
+      </p>
+    </div>
+    <div
+      class="products"
+      id="productGrid"
+    ></div>
+  </div>
+</section>
+<!-- WHY -->
+<section id="why">
+  <div class="wrap">
+    <div class="head">
+      <h2>
+        Why Accora?
+      </h2>
+      <p>
+        A simple marketplace experience
+        from browsing to checkout.
+      </p>
+    </div>
+    <div class="features">
+      <div class="feature">
+        ⚡
+        <h3>
+          Fast delivery
+        </h3>
+        <p>
+          Digital delivery details can be sent
+          to the customer's email after verified payment.
+        </p>
+      </div>
+      <div class="feature">
+        🔒
+        <h3>
+          Secure checkout
+        </h3>
+        <p>
+          Flutterwave handles wallet funding while
+          wallet purchases are processed server-side.
+        </p>
+      </div>
+      <div class="feature">
+        💬
+        <h3>
+          Support
+        </h3>
+        <p>
+          Customers can contact you when they
+          need help with an order.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <span>
+        © 2026 ACCORA
+      </span>
+      <span>
+        Digital Accounts. One Marketplace.
+      </span>
+    </div>
+  </div>
+</footer>
+<script>
+/* =========================
+   SUPABASE
+========================= */
+const SUPABASE_URL =
+  "https://jeuapimxtqekkrwxzogi.supabase.co";
+const SUPABASE_KEY =
+  "sb_publishable_y0GIN5fHcvwkDwLqEXdsQw_TqS_0P6L";
+const db =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+/* =========================
+   FLUTTERWAVE
+========================= */
+const FLUTTERWAVE_PUBLIC_KEY =
+  "FLWPUBK-ada601e95153cebf634f9c8ed42c1136-X";
+/* =========================
+   PRODUCTS
+========================= */
+const products = [
+  [
+    "Facebook",
+    "Facebook 1",
+    2500,
+    "Random Facebook account. Will be delivered to your email.",
+    "📘"
+  ],
+  [
+    "Facebook",
+    "Facebook 2",
+    3500,
+    "Created page, USA only. Will be delivered to your email.",
+    "📘"
+  ],
+  [
+    "Facebook",
+    "Facebook 3",
+    23000,
+    "Created page and verified dating. Will be delivered to your email.",
+    "📘"
+  ],
+  [
+    "Facebook",
+    "Facebook 4",
+    100000,
+    "Verified page and profile. Will be delivered to your email.",
+    "📘"
+  ],
+  [
+    "TikTok",
+    "TikTok 1",
+    1000,
+    "Empty TikTok profile. Will be delivered to your email.",
+    "🎵"
+  ],
+  [
+    "TikTok",
+    "TikTok 2",
+    4500,
+    "500–550 followers, USA or Germany. Will be delivered to your email.",
+    "🎵"
+  ],
+  [
+    "TikTok",
+    "TikTok 3",
+    10000,
+    "1K followers, USA, Germany or UK. Will be delivered to your email.",
+    "🎵"
+  ],
+  [
+    "TikTok",
+    "TikTok 4",
+    50000,
+    "10K–20K followers, web login only. Will be delivered to your email.",
+    "🎵"
+  ],
+  [
+    "Instagram",
+    "Instagram 1",
+    2200,
+    "0 followers, random country. Will be delivered to your email.",
+    "📸"
+  ],
+  [
+    "Instagram",
+    "Instagram 2",
+    5058,
+    "400–700 followers, USA, female. Will be delivered to your email.",
+    "📸"
+  ],
+  [
+    "Instagram",
+    "Instagram 3",
+    10000,
+    "2,000–4,000 followers, random country. Will be delivered to your email.",
+    "📸"
+  ],
+  [
+    "Instagram",
+    "Instagram 4",
+    43000,
+    "11K–20K followers, random country. Will be delivered to your email.",
+    "📸"
+  ],
+  [
+    "Outlook",
+    "Outlook 1",
+    120,
+    "Delivered to your email.",
+    "📧"
+  ],
+  [
+    "Outlook",
+    "Outlook 12",
+    1100,
+    "Delivered to your email.",
+    "📧"
+  ],
+  [
+    "VPN",
+    "ExpressVPN",
+    4500,
+    "Monthly subscription. Delivered to email.",
+    "🛡️"
+  ],
+  [
+    "VPN",
+    "Surfshark VPN",
+    6000,
+    "Monthly subscription. Delivered to email.",
+    "🛡️"
+  ],
+  [
+    "VPN",
+    "PIA VPN",
+    3000,
+    "Monthly subscription. Delivered to email.",
+    "🛡️"
+  ],
+  [
+    "VPN",
+    "HMA VPN",
+    4000,
+    "Monthly subscription. Delivered to email.",
+    "🛡️"
+  ],
+  [
+    "Proxy",
+    "SOCKS5 · 5 IPs",
+    6000,
+    "5 IPs. Delivered to email.",
+    "🌐"
+  ]
+];
+let cart = [];
+let authMode = "signup";
+let currentSession = null;
+/* =========================
+   HELPERS
+========================= */
+function esc(value){
+  return String(value).replace(
+    /[&<>"']/g,
+    m => ({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#039;"
+    }[m])
+  );
+}
+function money(value){
+  return "₦" +
+    Number(value)
+      .toLocaleString("en-NG");
+}
+/* =========================
+   CATEGORIES
+========================= */
+function renderCategories(){
+  const cats = [
+    ...new Set(
+      products.map(
+        p => p[0]
+      )
+    )
+  ];
+  document
+    .getElementById("categoryGrid")
+    .innerHTML = cats.map(
+      category => `
+      <button
+        class="cat"
+        onclick="filterCategory('${esc(category)}')"
+      >
+        <div class="ico">
+          ${
+            products.find(
+              p => p[0] === category
+            )[4]
+          }
+        </div>
+        <strong>
+          ${esc(category)}
+        </strong>
+        <small>
+          ${
+            products.filter(
+              p => p[0] === category
+            ).length
+          } products
+        </small>
+      </button>
+    `
+    ).join("");
+}
+/* =========================
+   PRODUCTS
+========================= */
+function renderProducts(list = products){
+  document
+    .getElementById("productGrid")
+    .innerHTML = list.map(
+      product => `
+      <article class="product">
+        <div class="thumb">
+          ${product[4]}
+        </div>
+        <div class="info">
+          <span class="tag">
+            ${esc(product[0])}
+          </span>
+          <h3>
+            ${esc(product[1])}
+          </h3>
+          <div class="price">
+            ${money(product[2])}
+          </div>
+          <div class="desc">
+            ${esc(product[3])}
+          </div>
+          <button
+            class="add"
+            onclick="addCart(${products.indexOf(product)})"
+          >
+            Add to cart
+          </button>
+        </div>
+      </article>
+    `
+    ).join("");
+  document
+    .getElementById("productHint")
+    .textContent =
+      list.length +
+      " product" +
+      (list.length === 1 ? "" : "s") +
+      " shown.";
+}
+function filterCategory(category){
+  renderProducts(
+    products.filter(
+      p => p[0] === category
+    )
+  );
+  document
+    .getElementById("products")
+    .scrollIntoView({
+      behavior:"smooth"
+    });
+}
+function searchProducts(){
+  const q =
+    document
+      .getElementById("search")
+      .value
+      .toLowerCase()
+      .trim();
+  renderProducts(
+    !q
+      ? products
+      : products.filter(
+          p =>
+            p.join(" ")
+              .toLowerCase()
+              .includes(q)
+        )
+  );
+}
+/* =========================
+   CART
+========================= */
+function addCart(index){
+  cart.push(
+    products[index]
+  );
+  renderCart();
+  document
+    .getElementById("drawer")
+    .classList.add("show");
+}
+function removeCart(index){
+  cart.splice(
+    index,
+    1
+  );
+  renderCart();
+  if(!cart.length){
+    document
+      .getElementById("drawer")
+      .classList.remove("show");
+  }
+}
+function renderCart(){
+  document
+    .getElementById("cartItems")
+    .innerHTML =
+      cart.length
+        ? cart.map(
+            (product,index) => `
+            <div class="cartitem">
+              <span>
+                ${esc(product[1])}
+              </span>
+              <span>
+                ${money(product[2])}
+                <button
+                  class="btn"
+                  style="padding:3px 7px"
+                  onclick="removeCart(${index})"
+                >
+                  ×
+                </button>
+              </span>
+            </div>
+          `
+          ).join("")
+        : "<p style='color:#999'>Cart is empty.</p>";
+  document
+    .getElementById("cartTotal")
+    .textContent =
+      cart.length
+        ? "Total: " +
+          money(
+            cart.reduce(
+              (total,product) =>
+                total + product[2],
+              0
+            )
+          )
+        : "";
+}
+/* =========================
+   AUTH
+========================= */
+function openAuth(mode){
+  authMode = mode;
+  document
+    .getElementById("authModal")
+    .classList.add("show");
+  updateAuth();
+}
+function closeAuth(){
+  document
+    .getElementById("authModal")
+    .classList.remove("show");
+  document
+    .getElementById("authMsg")
+    .textContent = "";
+}
+function switchAuth(){
+  authMode =
+    authMode === "signup"
+      ? "login"
+      : "signup";
+  updateAuth();
+}
+function updateAuth(){
+  const signup =
+    authMode === "signup";
+  document
+    .getElementById("authTitle")
+    .textContent =
+      signup
+        ? "Create your Accora account"
+        : "Welcome back";
+  document
+    .getElementById("authSub")
+    .textContent =
+      signup
+        ? "Sign up with your email and password."
+        : "Log in to your Accora account.";
+  document
+    .getElementById("confirmField")
+    .style.display =
+      signup
+        ? "block"
+        : "none";
+  document
+    .getElementById("confirm")
+    .required =
+      signup;
+  document
+    .getElementById("submitAuth")
+    .textContent =
+      signup
+        ? "Create account"
+        : "Login";
+}
+async function authSubmit(event){
+  event.preventDefault();
+  const email =
+    document
+      .getElementById("email")
+      .value
+      .trim();
+  const password =
+    document
+      .getElementById("password")
+      .value;
+  const msg =
+    document
+      .getElementById("authMsg");
+  msg.textContent =
+    "Please wait...";
+  try{
+    if(authMode === "signup"){
+      const confirm =
+        document
+          .getElementById("confirm")
+          .value;
+      if(password !== confirm){
+        msg.textContent =
+          "Passwords do not match.";
+        return;
+      }
+      const result =
+        await db.auth.signUp({
+          email,
+          password
+        });
+      if(result.error){
+        msg.textContent =
+          result.error.message;
+        return;
+      }
+      msg.textContent =
+        result.data.session
+          ? "Account created successfully."
+          : "Account created. Check your email to confirm.";
+    }else{
+      const result =
+        await db.auth.signInWithPassword({
+          email,
+          password
+        });
+      if(result.error){
+        msg.textContent =
+          result.error.message;
+        return;
+      }
+      msg.textContent =
+        "Login successful.";
+    }
+    await updateHeader();
+    setTimeout(
+      closeAuth,
+      700
+    );
+  }catch(error){
+    console.error(error);
+    msg.textContent =
+      "Something went wrong. Please try again.";
+  }
+}
+/* =========================
+   HEADER
+========================= */
+async function updateHeader(){
+  const result =
+    await db.auth.getSession();
+  currentSession =
+    result.data?.session || null;
+  const actions =
+    document.getElementById("actions");
+  if(!actions) return;
+  if(currentSession?.user){
+    actions.innerHTML = `
+      <button
+        class="btn"
+        onclick="openAccount()"
+      >
+        Account
+      </button>
+      <button
+        class="btn primary"
+        onclick="logout()"
+      >
+        Logout
+      </button>
+    `;
+  }else{
+    actions.innerHTML = `
+      <button
+        class="btn login"
+        onclick="openAuth('login')"
+      >
+        Login
+      </button>
+      <button
+        class="btn primary"
+        onclick="openAuth('signup')"
+      >
+        Create account
+      </button>
+    `;
+  }
+}
+/* =========================
+   ACCOUNT
+========================= */
+async function openAccount(){
+  if(!currentSession?.user){
+    openAuth("login");
+    return;
+  }
+  document
+    .getElementById("accountModal")
+    .classList.add("show");
+  document
+    .getElementById("accountEmail")
+    .textContent =
+      currentSession.user.email;
+  await loadWallet();
+}
+function closeAccount(){
+  document
+    .getElementById("accountModal")
+    .classList.remove("show");
+}
+function openFundWallet(){
+  const box =
+    document
+      .getElementById("fundWalletBox");
+  box.style.display =
+    box.style.display === "none"
+      ? "block"
+      : "none";
+}
+/* =========================
+   WALLET API
+========================= */
+async function walletRequest(body){
+  const sessionResult =
+    await db.auth.getSession();
+  const session =
+    sessionResult.data?.session;
+  if(!session){
+    throw new Error(
+      "Please log in first."
+    );
+  }
+  const response =
+    await fetch(
+      "/api/wallet",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":
+            "application/json",
+          "Authorization":
+            "Bearer " +
+            session.access_token
+        },
+        body:
+          JSON.stringify(body)
+      }
+    );
+  const result =
+    await response.json();
+  if(!response.ok){
+    throw new Error(
+      result.error ||
+      "Wallet request failed."
+    );
+  }
+  return result;
+}
+async function loadWallet(){
+  const balanceElement =
+    document
+      .getElementById("walletBalance");
+  const transactionElement =
+    document
+      .getElementById("transactionList");
+  balanceElement.textContent =
+    "Loading...";
+  try{
+    const balance =
+      await walletRequest({
+        action:"balance"
+      });
+    balanceElement.textContent =
+      money(
+        balance.balance || 0
+      );
+    const history =
+      await walletRequest({
+        action:"transactions"
+      });
+    renderTransactions(
+      history.transactions || []
+    );
+  }catch(error){
+    console.error(error);
+    balanceElement.textContent =
+      "₦0";
+    transactionElement.innerHTML =
+      `<p style="color:#ff7777">
+        ${esc(error.message)}
+      </p>`;
+  }
+}
+function renderTransactions(transactions){
+  const container =
+    document
+      .getElementById("transactionList");
+  if(!transactions.length){
+    container.innerHTML =
+      `<p style="color:#888">
+        No transactions yet.
+      </p>`;
+    return;
+  }
+  container.innerHTML =
+    transactions.map(
+      transaction => {
+        const isCredit =
+          transaction.type === "credit";
+        const sign =
+          isCredit
+            ? "+"
+            : "-";
+        const date =
+          transaction.created_at
+            ? new Date(
+                transaction.created_at
+              ).toLocaleString()
+            : "";
+        return `
+          <div class="transaction">
+            <div class="transaction-info">
+              <div class="transaction-title">
+                ${esc(
+                  transaction.description ||
+                  transaction.type
+                )}
+              </div>
+              <div class="transaction-date">
+                ${esc(date)}
+              </div>
+            </div>
+            <div
+              class="${
+                isCredit
+                  ? "credit"
+                  : "debit"
+              }"
+            >
+              ${sign}${money(
+                Math.abs(
+                  Number(
+                    transaction.amount
+                  )
+                )
+              )}
+            </div>
+          </div>
+        `;
+      }
+    ).join("");
+}
+/* =========================
+   FUND WALLET
+   Flutterwave is ONLY used
+   for adding money to wallet.
+========================= */
+async function fundWallet(){
+  const amount =
+    Number(
+      document
+        .getElementById("walletAmount")
+        .value
+    );
+  const msg =
+    document
+      .getElementById("walletMsg");
+  if(
+    !Number.isFinite(amount) ||
+    amount < 100
+  ){
+    msg.textContent =
+      "Minimum wallet funding is ₦100.";
+    return;
+  }
+  if(
+    typeof FlutterwaveCheckout !==
+    "function"
+  ){
+    msg.textContent =
+      "Flutterwave is still loading. Try again.";
+    return;
+  }
+  msg.textContent =
+    "Preparing payment...";
+  try{
+    const created =
+      await walletRequest({
+        action:"create_topup",
+        amount
+      });
+    const txRef =
+      created.tx_ref;
+    FlutterwaveCheckout({
+      public_key:
+        FLUTTERWAVE_PUBLIC_KEY,
+      tx_ref:
+        txRef,
+      amount:
+        amount,
+      currency:
+        "NGN",
+      payment_options:
+        "card,banktransfer,ussd",
+      customer:{
+        email:
+          currentSession.user.email
+      },
+      customizations:{
+        title:
+          "ACCORA WALLET",
+        description:
+          "Fund your Accora wallet"
+      },
+      callback:
+        async function(payment){
+          msg.textContent =
+            "Payment received. Verifying...";
+          try{
+            const verified =
+              await walletRequest({
+                action:
+                  "verify_topup",
+                tx_ref:
+                  txRef,
+                currency:
+                  "NGN"
+              });
+            msg.textContent =
+              "Wallet funded successfully.";
+            document
+              .getElementById("walletAmount")
+              .value = "";
+            document
+              .getElementById("fundWalletBox")
+              .style.display =
+                "none";
+            document
+              .getElementById("walletBalance")
+              .textContent =
+                money(
+                  verified.balance
+                );
+            await loadWallet();
+          }catch(error){
+            console.error(error);
+            msg.textContent =
+              error.message ||
+              "Payment verification failed.";
+          }
+        },
+      onclose:function(){
+        if(
+          msg.textContent ===
+          "Preparing payment..."
+        ){
+          msg.textContent =
+            "Checkout closed.";
+        }
+      }
+    });
+  }catch(error){
+    console.error(error);
+    msg.textContent =
+      error.message ||
+      "Unable to start wallet funding.";
+  }
+}
+/* =========================
+   PRODUCT PAYMENT
+   WALLET ONLY
+========================= */
+async function payFlutterwave(){
+  const email =
+    document
+      .getElementById("deliveryEmail")
+      .value
+      .trim();
+  const msg =
+    document
+      .getElementById("payMsg");
+  if(!cart.length){
+    msg.textContent =
+      "Your cart is empty.";
+    return;
+  }
+  if(!email){
+    msg.textContent =
+      "Enter your delivery email.";
+    return;
+  }
+  if(!currentSession?.user){
+    msg.textContent =
+      "Please log in to use your wallet.";
+    openAuth("login");
+    return;
+  }
+  const amount =
+    cart.reduce(
+      (total,product) =>
+        total +
+        Number(product[2]),
+      0
+    );
+  msg.textContent =
+    "Checking wallet balance...";
+  try{
+    /*
+      Check current wallet balance
+    */
+    const wallet =
+      await walletRequest({
+        action:"balance"
+      });
+    const balance =
+      Number(
+        wallet.balance
+      ) || 0;
+    if(balance < amount){
+      msg.textContent =
+        "Insufficient wallet balance. Your balance is " +
+        money(balance) +
+        ".";
+      return;
+    }
+    /*
+      Purchase products
+      using wallet
+    */
+    const orders = [];
+    for(
+      const product of cart
+    ){
+      const response =
+        await fetch(
+          "/api/order",
+          {
+            method:"POST",
+            headers:{
+              "Content-Type":
+                "application/json"
+            },
+            body:
+              JSON.stringify({
+                action:"buy",
+                user_id:
+                  currentSession.user.id,
+                customer_email:
+                  email,
+                product_name:
+                  product[1],
+                category:
+                  product[0],
+                amount:
+                  Number(product[2])
+              })
+          }
+        );
+      const data =
+        await response.json();
+      if(
+        !response.ok ||
+        !data.success
+      ){
+        throw new Error(
+          data.error ||
+          "Unable to complete purchase."
+        );
+      }
+      orders.push(data);
+    }
+    /*
+      Purchase successful
+    */
+    const newBalance =
+      orders.length
+        ? Number(
+            orders[
+              orders.length - 1
+            ].balance
+          )
+        : balance;
+    msg.textContent =
+      "Purchase successful! Your wallet has been charged.";
+    /*
+      Clear cart
+    */
+    cart = [];
+    renderCart();
+    document
+      .getElementById("drawer")
+      .classList
+      .remove("show");
+    /*
+      Refresh wallet
+      if account is open
+    */
+    if(
+      document
+        .getElementById("accountModal")
+        .classList
+        .contains("show")
+    ){
+      await loadWallet();
+    }
+    /*
+      Show order numbers
+    */
+    const orderNumbers =
+      orders
+        .map(
+          order =>
+            order.order_number
+        )
+        .join(", ");
+    setTimeout(
+      () => {
+        alert(
+          "Purchase successful!\n\n" +
+          "Order: " +
+          orderNumbers +
+          "\n" +
+          "Email: " +
+          email +
+          "\n" +
+          "Amount: " +
+          money(amount) +
+          "\n" +
+          "Remaining balance: " +
+          money(newBalance)
+        );
+      },
+      300
+    );
+  }catch(error){
+    console.error(
+      "Wallet purchase error:",
+      error
+    );
+    msg.textContent =
+      error.message ||
+      "Wallet purchase failed.";
+  }
+}
+/* =========================
+   LOGOUT
+========================= */
+async function logout(){
+  await db.auth.signOut();
+  currentSession =
+    null;
+  closeAccount();
+  await updateHeader();
+}
+/* =========================
+   AUTH STATE
+========================= */
+db.auth.onAuthStateChange(
+  (_event,session) => {
+    currentSession =
+      session;
+    updateHeader();
+  }
+);
+/* =========================
+   INITIALIZE
+========================= */
+renderCategories();
+renderProducts();
+renderCart();
+db.auth
+  .getSession()
+  .then(
+    ({data}) => {
+      currentSession =
+        data?.session || null;
+      updateHeader();
+    }
+  );
+</script>
+</body>
+</html>
